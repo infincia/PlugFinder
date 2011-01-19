@@ -36,10 +36,15 @@ import logging
 class STUNHandler(webapp.RequestHandler):
 	def get(self):
 		self.response.out.write(self.request.remote_addr)
-		
+
+class DLHandler(webapp.RequestHandler):
+	def get(self,plugid,file):
+		plug = Plug.get_by_key_name(plugid)	
+		publicip = plug.publicip
+		url = "http://" + publicip + "/files/download/" + file
+		self.redirect(url)
 
 class MainHandler(webapp.RequestHandler):
-	
 	def post(self):
 		try:
 			sender = self.request.remote_addr
@@ -69,7 +74,7 @@ class MainHandler(webapp.RequestHandler):
 		self.response.out.write(template.render(path, template_values))
 
 def main():
-    application = webapp.WSGIApplication([('/', MainHandler),('/stun', STUNHandler)],
+    application = webapp.WSGIApplication([('/', MainHandler),('/stun', STUNHandler),(r'/dl/(\w+)/(\w+)', DLHandler)],
                                          debug=True)
     util.run_wsgi_app(application)
 
