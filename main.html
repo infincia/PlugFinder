@@ -30,9 +30,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 {% block header %}
 <img alt="PlugApps" src="/images/plugapps.png"/>
 {% endblock %}
-
 {% block pagearea %}
+{{ pluglist }}
+{% if plugsfound %}
+<span><br/><br/><br/><img src="/images/up.png"/><br/><br/>
+{% for plug in pluglist %}
 <div id="plug"><tr>
-{{ string }}
+Plug with id '{{ plug.plugid }}' found at <a href= "http://{{ plug.localip }}">http://{{ plug.localip }}</a><br/><br/>
 </div><!-- plug -->
+{% endfor %}
+</span>
+{% else %}
+<span><br/><br/><br/><img src="/images/down.png"/><br/><br/><br/>Could not find a plug at your location, please make sure your plug can reach the internet</span>
+{% endif %}
 {% endblock %}

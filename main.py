@@ -33,45 +33,43 @@ from google.appengine.ext.webapp import template
 from models import *
 import logging
 
+class STUNHandler(webapp.RequestHandler):
+	def get(self):
+		self.response.out.write(self.request.remote_addr)
+		
+
 class MainHandler(webapp.RequestHandler):
 	
 	def post(self):
-		sender = self.request.remote_addr
-		if self.request.get('plugip'):
-			if Plug.get_by_key_name(sender):
-				plug = Plug.get_by_key_name(sender)
+		try:
+			sender = self.request.remote_addr
+			plugid = self.request.get('plugid')
+			localip = self.request.get('localip')
+			if Plug.get_by_key_name(plugid):
+				plug = Plug.get_by_key_name(plugid)
 			else:
-				plug = Plug(key_name=sender)
+				plug = Plug(key_name=plugid)
 			plug.publicip = sender
-			plug.plugip = self.request.get('plugip')
+			plug.plugid = plugid
+			plug.localip = localip
 			plug.put()
-		else:
+		except:
 			pass
-	
+
 	def get(self):
-		plugip = ''
-		string = ''
-		pluglist = db.GqlQuery("SELECT * FROM Plug")
+		publicip = self.request.remote_addr
+		pluglist = Plug.all()
+		pluglist.filter("publicip =", publicip)
 		if pluglist.count() != 0:
-			for plug in pluglist:
-				if plug.publicip == self.request.remote_addr:
-					string = '<span><br/><br/><br/><img src="/images/up.png"/><br/><br/><br/>Plug found! Its current IP address is ' 
-					string += plug.plugip
-					string += '</span>'
-					#logging.info('string is %s' % string)
-				else:
-					pass
-		if string == '':
-			#logging.info('no plug found')
-			#logging.info('string is %s' % string)
-			string = '''<span><br/><br/><br/><img src="/images/down.png"/><br/><br/><br/>Could not find a plug at your location, please make sure your plug can reach the internet</span>'''
-		#template_values = { 'user': user, 'serverlist': serverlist, }	
-		template_values = { 'string': string }
+			plugsfound = True
+		else:
+			plugsfound = False
+		template_values = { 'pluglist': pluglist, 'plugsfound': plugsfound }
 		path = os.path.join(os.path.dirname(__file__), 'main.html')
 		self.response.out.write(template.render(path, template_values))
 
 def main():
-    application = webapp.WSGIApplication([('/', MainHandler)],
+    application = webapp.WSGIApplication([('/', MainHandler),('/stun', STUNHandler)],
                                          debug=True)
     util.run_wsgi_app(application)
 
