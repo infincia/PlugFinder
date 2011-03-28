@@ -41,7 +41,11 @@ class DLHandler(webapp.RequestHandler):
 	def get(self,plugid,file):
 		plug = Plug.get_by_key_name(plugid)	
 		publicip = plug.publicip
-		url = "http://" + publicip + "/files/download/" + file
+		try:
+			port = plug.port
+		except:
+			port = "80"
+		url = "http://" + publicip + ":" + port + "/files/download/" + file
 		self.redirect(url)
 
 class MainHandler(webapp.RequestHandler):
@@ -50,6 +54,7 @@ class MainHandler(webapp.RequestHandler):
 			sender = self.request.remote_addr
 			plugid = self.request.get('plugid')
 			localip = self.request.get('localip')
+			port = self.request.get('port')
 			if Plug.get_by_key_name(plugid):
 				plug = Plug.get_by_key_name(plugid)
 			else:
@@ -57,6 +62,7 @@ class MainHandler(webapp.RequestHandler):
 			plug.publicip = sender
 			plug.plugid = plugid
 			plug.localip = localip
+			plug.port = port
 			plug.put()
 		except:
 			pass

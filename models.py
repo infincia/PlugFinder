@@ -30,6 +30,7 @@ from google.appengine.ext import db
 
 class Plug(db.Model):
 	publicip = db.StringProperty("Public IP address we received the ping from", multiline=False)
+	port = db.StringProperty("TCP port that the plug can be contacted on", multiline=False)
 	plugid = db.StringProperty("This is a unique id for each plug, right now its the MAC of eth0", multiline=False)
 	localip = db.StringProperty("Private IP address the plug reported to us",multiline=False)
 	found = db.DateTimeProperty("Date and time plug contacted us", auto_now_add=True)

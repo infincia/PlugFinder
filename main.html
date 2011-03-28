@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <span><br/><br/><br/><img src="/images/up.png"/><br/><br/>
 {% for plug in pluglist %}
 <div id="plug"><tr>
-Plug with id '{{ plug.plugid }}' found at <a href= "http://{{ plug.localip }}">http://{{ plug.localip }}</a><br/><br/>
+Plug with id '{{ plug.plugid }}' found at <a href= "http://{{ plug.localip }}:{{ plug.port }}">http://{{ plug.localip }}:{{ plug.port }}</a><br/><br/>
 </div><!-- plug -->
 {% endfor %}
 </span>
